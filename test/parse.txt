@@ -1,0 +1,13 @@
+p
+Fp
+Gp
+Xp
+F   p
+FGXp
+p U q
+p \/ q
+p /\ q
+(p)
+((((p))))
+(p \/ q) /\ p
+p /\ q \/ p U q
