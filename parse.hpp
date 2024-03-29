@@ -2,8 +2,9 @@
 #define PARSE_HPP
 
 #include "ltl.hpp"
+#include "numbering.hpp"
 #include <map>
 
-Formula parse(FILE *, std::map<std::string, size_t>);
+Formula parse(FILE *, const Numbering &map);
 
 #endif

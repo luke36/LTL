@@ -1,106 +1,58 @@
 #include "ltl.hpp"
 
-void FormulaAtom::show(FILE *fp) const {
-  fprintf(fp, "%s", name.c_str());
+void FormulaAtom::show(FILE *fp, const Numbering &map) const {
+  fprintf(fp, "%s", map.toString(id)->c_str());
 }
 
-void FormulaNegation::show(FILE *fp) const {
+void FormulaNegation::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "! ");
-  f.show(fp);
+  f.show(fp, map);
 }
 
-void FormulaConj::show(FILE *fp) const {
+void FormulaConj::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "(");
-  f1.show(fp);
+  f1.show(fp, map);
   fprintf(fp, " /\\ ");
-  f2.show(fp);
+  f2.show(fp, map);
   fprintf(fp, ")");
 }
 
-void FormulaDisj::show(FILE *fp) const {
+void FormulaDisj::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "(");
-  f1.show(fp);
+  f1.show(fp, map);
   fprintf(fp, " \\/ ");
-  f2.show(fp);
+  f2.show(fp, map);
   fprintf(fp, ")");
 }
 
-void FormulaNext::show(FILE *fp) const {
+void FormulaNext::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "X ");
-  f.show(fp);
+  f.show(fp, map);
 }
 
-void FormulaAlways::show(FILE *fp) const {
+void FormulaAlways::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "G ");
-  f.show(fp);
+  f.show(fp, map);
 }
 
-void FormulaEvent::show(FILE *fp) const {
+void FormulaEvent::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "F ");
-  f.show(fp);
+  f.show(fp, map);
 }
 
-void FormulaUntil::show(FILE *fp) const {
+void FormulaUntil::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "(");
-  f1.show(fp);
+  f1.show(fp, map);
   fprintf(fp, " U ");
-  f2.show(fp);
-  fprintf(fp, ")");
-}
-
-void FormulaAtom::pretty(FILE *fp) const {
-  fprintf(fp, "%s", name.c_str());
-}
-
-void FormulaNegation::pretty(FILE *fp) const {
-  fprintf(fp, "¬");
-  f.pretty(fp);
-}
-
-void FormulaConj::pretty(FILE *fp) const {
-  fprintf(fp, "(");
-  f1.pretty(fp);
-  fprintf(fp, " ∧ ");
-  f2.pretty(fp);
-  fprintf(fp, ")");
-}
-
-void FormulaDisj::pretty(FILE *fp) const {
-  fprintf(fp, "(");
-  f1.pretty(fp);
-  fprintf(fp, " ∨ ");
-  f2.pretty(fp);
-  fprintf(fp, ")");
-}
-
-void FormulaNext::pretty(FILE *fp) const {
-  fprintf(fp, "○");
-  f.pretty(fp);
-}
-
-void FormulaAlways::pretty(FILE *fp) const {
-  fprintf(fp, "□");
-  f.pretty(fp);
-}
-
-void FormulaEvent::pretty(FILE *fp) const {
-  fprintf(fp, "◇");
-  f.pretty(fp);
-}
-
-void FormulaUntil::pretty(FILE *fp) const {
-  fprintf(fp, "(");
-  f1.pretty(fp);
-  fprintf(fp, " ∪ ");
-  f2.pretty(fp);
+  f2.show(fp, map);
   fprintf(fp, ")");
 }
 
 using std::shared_ptr;
 
-Formula mkAtom(size_t id, const std::string &name) {
-  FormulaBase *f = new FormulaAtom(id, name);
-  return shared_ptr<FormulaBase>(f);
+Formula mkAtom(size_t id) {
+  FormulaBase *p = new FormulaAtom(id);
+  return shared_ptr<FormulaBase>(p);
 }
 
 Formula mkNegation(Formula f) {
@@ -136,4 +88,68 @@ Formula mkEvent(Formula f) {
 Formula mkUntil(Formula f1, Formula f2) {
   FormulaBase *p = new FormulaUntil(f1, f2);
   return shared_ptr<FormulaBase>(p);
+}
+
+NNF FormulaAtom::toNNF() const {
+  return mkNNFAtom(id);
+}
+
+NNF FormulaAtom::pushNegation() const {
+  return mkNNFNegAtom(id);
+}
+
+NNF FormulaNegation::toNNF() const {
+  return f.pushNegation();
+}
+
+NNF FormulaNegation::pushNegation() const {
+  return f.toNNF();
+}
+
+NNF FormulaConj::toNNF() const {
+  return mkNNFConj(f1.toNNF(), f2.toNNF());
+}
+
+NNF FormulaConj::pushNegation() const {
+  return mkNNFDisj(f1.pushNegation(), f2.pushNegation());
+}
+
+NNF FormulaDisj::toNNF() const {
+  return mkNNFDisj(f1.toNNF(), f2.toNNF());
+}
+
+NNF FormulaDisj::pushNegation() const {
+  return mkNNFConj(f1.pushNegation(), f2.pushNegation());
+}
+
+NNF FormulaNext::toNNF() const {
+  return mkNNFNext(f.toNNF());
+}
+
+NNF FormulaNext::pushNegation() const {
+  return mkNNFNext(f.pushNegation());
+}
+
+NNF FormulaAlways::toNNF() const {
+  return mkNNFRelease(mkNNFFalse(), f.toNNF());
+}
+
+NNF FormulaAlways::pushNegation() const {
+  return mkNNFUntil(mkNNFTrue(), f.pushNegation());
+}
+
+NNF FormulaEvent::toNNF() const {
+  return mkNNFUntil(mkNNFTrue(), f.toNNF());
+}
+
+NNF FormulaEvent::pushNegation() const {
+  return mkNNFRelease(mkNNFFalse(), f.pushNegation());
+}
+
+NNF FormulaUntil::toNNF() const {
+  return mkNNFUntil(f1.toNNF(), f2.toNNF());
+}
+
+NNF FormulaUntil::pushNegation() const {
+  return mkNNFRelease(f1.pushNegation(), f2.pushNegation());
 }

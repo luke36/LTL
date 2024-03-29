@@ -11,3 +11,6 @@ p /\ q
 ((((p))))
 (p \/ q) /\ p
 p /\ q \/ p U q
+!p
+!(p \/ q)
+! F (p U !q U GFX p)

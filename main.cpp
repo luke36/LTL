@@ -2,8 +2,16 @@
 #include "parse.hpp"
 
 int main() {
-  std::map<std::string, size_t> id_map;
-  id_map["p"] = 0;
-  id_map["q"] = 1;
-  parse(stdin, id_map).show(stdout);
+  Numbering map;
+  map.addString("p");
+  map.addString("q");
+  char c;
+  while ((c = getchar()) != EOF) {
+    ungetc(c, stdin);
+    Formula f = parse(stdin, map);
+    f.show(stdout, map);
+    printf("\n  =>  ");
+    f.toNNF().show(stdout, map);
+    printf("\n");
+  }
 }
