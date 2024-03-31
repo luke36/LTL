@@ -15,7 +15,7 @@ static inline int getc_space(FILE *fp) {
 }
 
 static inline bool isvalidprop(int c) {
-  return isalnum(c) || c == '_' || c == '-';
+  return islower(c) || isdigit(c) || c == '_' || c == '-';
 }
 
 static Formula parseSingle(FILE *fp, const Numbering &map) {
@@ -47,7 +47,7 @@ static Formula parseSingle(FILE *fp, const Numbering &map) {
       do {
         s += c;
         c = getc(fp);
-      } while (isalnum(c) || c == '_' || c == '-');
+      } while (isvalidprop(c));
       ungetc(c, fp);
       auto ret = map.toId(s);
       if (!ret) {

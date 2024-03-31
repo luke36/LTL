@@ -1,0 +1,10 @@
+- [DONE] nTempral() is silly. We should at least count identical atoms once.
+- Better, we should only compute their transitions once, since they are the
+  same after all. But it's cheap anyway.
+- Support operation between DynBitset of different sizes. Then we do not need
+  the above.
+- Use the maximal atom index in a formula, rather than the number of all atoms.
+- Do not copy the entire transition, but just return a pointer when possible.
+
+
+

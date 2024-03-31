@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
+set(CMAKE_CXX_COMPILER clang)
+
 project (ltl)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,6 +13,8 @@ set(SOURCES
   main.cpp
   nnf.cpp
   numbering.cpp
+  dynbitset.cpp
+  vwaa.cpp
 )
 
 add_executable(main ${SOURCES})
