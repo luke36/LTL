@@ -4,13 +4,12 @@
 #include <cstddef>
 
 class DynBitset {
-  typedef unsigned long block_type;
+  typedef unsigned int block_type;
   static constexpr size_t blockbit = 8 * sizeof(block_type);
   size_t sz;
   size_t nblock;
   block_type *blocks;
 public:
-  DynBitset() : blocks(nullptr) {}
   DynBitset(size_t sz_, bool one)
     : sz(sz_),
       nblock((sz_ - 1) / blockbit + 1),

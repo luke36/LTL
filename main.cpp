@@ -5,7 +5,7 @@
 
 int main() {
   Numbering map;
-  std::vector<std::string> ap = {"p", "q", "r"};
+  std::vector<std::string> ap = {"p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
   for (auto &p : ap) {
     map.addString(p);
   }

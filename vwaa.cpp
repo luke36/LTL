@@ -47,33 +47,18 @@ static VWAA::transition &addTransition(VWAA::transition &t1,
   return t1;
 }
 
-static void composeRec(VWAA::transition &all,
-                       std::vector<VWAA::single_transition> &prod,
-                       const std::vector<const VWAA::transition *> &ts,
-                       size_t i) {
-  if (i == prod.size()) {
-    addTransition(all, std::move(prod.back()));
-  } else {
-    for (auto &t : *ts[i]) {
-      if (i == 0) {
-        prod[i] = t;
-        composeRec(all, prod, ts, i + 1);
-      } else {
-        std::optional<VWAA::single_transition> &&s = composeSingle(prod[i - 1], t);
-        if (s) {
-          prod[i] = std::move(s.value());
-          composeRec(all, prod, ts, i + 1);
-        }
+VWAA::transition transitionCompose(const VWAA::transition &t1,
+                                   const VWAA::transition &t2) {
+  VWAA::transition all;
+
+  for (auto &t : t1) {
+    for (auto &s : t2) {
+      std::optional<VWAA::single_transition> &&u = composeSingle(s, t);
+      if (u) {
+        addTransition(all, std::move(u.value()));
       }
     }
   }
-}
-
-VWAA::transition transitionCompose(const std::vector<const VWAA::transition *> &ts) {
-  std::vector<VWAA::single_transition> prefix_prod(ts.size());
-  VWAA::transition all;
-
-  composeRec(all, prefix_prod, ts, 0);
 
   return all;
 }
@@ -95,7 +80,7 @@ size_t VWAA::addState(transition &&t, bool is_final) {
   size_t equal_state;
   for (size_t fs = 0; fs < transitions.size(); fs++) {
     if (transitions[fs].size() == t.size() &&
-        is_final == final_states.has(fs)) {
+        is_final == (final_states.find(fs) != final_states.end())) {
       bool equal = true;
       for (auto &t1 : transitions[fs]) {
         bool same = false;
@@ -123,7 +108,7 @@ size_t VWAA::addState(transition &&t, bool is_final) {
     size_t s = transitions.size();
     transitions.emplace_back(std::move(t));
     if (is_final) {
-      final_states.add(s);
+      final_states.insert(s);
     }
     return s;
   }
@@ -137,7 +122,7 @@ const std::vector<DynBitset> &VWAA::initialStates() const {
   return initial_states;
 }
 
-const DynBitset &VWAA::finalStates() const {
+const std::set<size_t> &VWAA::finalStates() const {
   return final_states;
 }
 
@@ -154,7 +139,7 @@ VWAA &VWAA::setInitialStates(std::vector<DynBitset> &&initial) {
       }
     } else {
       transitions[i] = {};
-      final_states.remove(i);
+      final_states.erase(i);
       removed_states.add(i);
     }
   }
@@ -191,7 +176,7 @@ void VWAA::show(FILE *fp, const Numbering &map) const {
 
   fprintf(fp, "final states: ");
   for (size_t i = 0; i < transitions.size(); i++) {
-    if (final_states.has(i)) {
+    if (final_states.find(i) != final_states.end()) {
       fprintf(fp, "%lu ", i);
     }
   }
