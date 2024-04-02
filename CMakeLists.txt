@@ -15,6 +15,7 @@ set(SOURCES
   numbering.cpp
   dynbitset.cpp
   vwaa.cpp
+  gba.cpp
 )
 
 add_executable(main ${SOURCES})

@@ -15,7 +15,7 @@ bool VWAA::single_transition::operator==(const single_transition &other) const {
     to == other.to;
 }
 
-static std::optional<VWAA::single_transition>
+std::optional<VWAA::single_transition>
 composeSingle(const VWAA::single_transition &t1, const VWAA::single_transition &t2) {
   VWAA::single_transition ret(t1);
   ret.pos.unify(t2.pos);
@@ -26,6 +26,14 @@ composeSingle(const VWAA::single_transition &t1, const VWAA::single_transition &
   } else {
     return ret;
   }
+}
+
+size_t VWAA::MaxState() const {
+  return transitions.size();
+}
+
+size_t VWAA::nAP() const {
+  return n_ap;
 }
 
 static VWAA::transition &addTransition(VWAA::transition &t1,
@@ -114,7 +122,7 @@ size_t VWAA::addState(transition &&t, bool is_final) {
   }
 }
 
-VWAA::transition &VWAA::stateTransition(size_t s) {
+const VWAA::transition &VWAA::stateTransition(size_t s) const {
   return transitions[s];
 }
 
@@ -162,7 +170,7 @@ void VWAA::show(FILE *fp, const Numbering &map) const {
             fprintf(fp, " /\\ ~%s", map.toString(j)->c_str());
           }
         }
-        printf("  ->  tt");
+        fprintf(fp, "  ->  tt");
         for (size_t j = 0; j < t.to.size(); j++) {
           if (t.to.has(j)) {
             fprintf(fp, " /\\ %lu", j);

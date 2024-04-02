@@ -349,7 +349,7 @@ NNFRelease::addTransition(size_t nap, size_t max, VWAA &aa) {
 VWAA genVWAA(size_t n_atom, NNF f) {
   std::set<size_t> pos, neg;
   size_t max = f.nTempral(pos, neg) + 2; // tt, ff
-  VWAA ret(max);
+  VWAA ret(n_atom, max);
   f.addTransition(n_atom, max, ret);
   auto &&initial = f.dnf(max);
   std::vector<DynBitset> init;

@@ -12,9 +12,11 @@ class DynBitset {
 public:
   DynBitset(size_t sz_, bool one)
     : sz(sz_),
-      nblock((sz_ - 1) / blockbit + 1),
-      blocks(new block_type[nblock]) {
-    if (one) {
+      nblock(sz_ == 0 ? 0 : (sz_ - 1) / blockbit + 1),
+      blocks(sz_ == 0 ? nullptr : new block_type[nblock]) {
+    if (sz == 0) {
+      return;
+    } else if (one) {
       size_t rem = sz % blockbit;
       if (rem == 0) {
         rem = blockbit;
@@ -41,7 +43,7 @@ public:
   DynBitset(const DynBitset &other)
     : sz(other.sz),
       nblock(other.nblock),
-      blocks(new block_type[nblock]) {
+      blocks(other.sz == 0 ? nullptr : new block_type[nblock]) {
     for (size_t i = 0; i < nblock; i++) {
       blocks[i] = other.blocks[i];
     }

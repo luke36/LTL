@@ -33,23 +33,29 @@ public:
   typedef std::list<single_transition> transition;
 
 private:
+  size_t n_ap;
   std::vector<transition> transitions;
   std::vector<DynBitset> initial_states;
   std::set<size_t> final_states;
   DynBitset removed_states;
 public:
-  VWAA (size_t max_state)
-    : transitions(), initial_states(), final_states(),
+  VWAA (size_t n_ap_, size_t max_state)
+    : n_ap(n_ap_), transitions(), initial_states(), final_states(),
       removed_states(max_state, false) {}
+  size_t MaxState() const;
+  size_t nAP() const;
   size_t nextStateId() const;
   size_t addState(transition &&t, bool is_final);
-  transition &stateTransition(size_t s);
+  const transition &stateTransition(size_t s) const;
   const std::vector<DynBitset> &initialStates() const;
   const std::set<size_t> &finalStates() const;
   VWAA &setInitialStates(std::vector<DynBitset> &&initial);
   void show(FILE *fp, const Numbering &map) const;
 };
 
+std::optional<VWAA::single_transition>
+composeSingle(const VWAA::single_transition &t1, const VWAA::single_transition &t2);
+void showAP(const DynBitset &p);
 VWAA::transition transitionCompose(const VWAA::transition &t1,
                                    const VWAA::transition &t2);
 VWAA::transition &transitionUnion(VWAA::transition &t1,

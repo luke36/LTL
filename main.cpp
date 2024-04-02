@@ -1,6 +1,7 @@
 #include "ltl.hpp"
 #include "parse.hpp"
 #include "nnf.hpp"
+#include "gba.hpp"
 #include <vector>
 
 int main() {
@@ -18,6 +19,9 @@ int main() {
     NNF nnf = f.toNNF();
     nnf.show(stdout, map);
     printf("\n");
-    genVWAA(ap.size(), nnf).show(stdout, map);
+    VWAA &&aa = genVWAA(ap.size(), nnf);
+    aa.show(stdout, map);
+    GBA &&ba = genGBA(aa);
+    ba.show(stdout, map);
   }
 }
