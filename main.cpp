@@ -2,6 +2,7 @@
 #include "parse.hpp"
 #include "nnf.hpp"
 #include "gba.hpp"
+#include "buchi.hpp"
 #include <vector>
 
 int main() {
@@ -20,8 +21,10 @@ int main() {
     nnf.show(stdout, map);
     printf("\n");
     VWAA &&aa = genVWAA(ap.size(), nnf);
-    aa.show(stdout, map);
-    GBA &&ba = genGBA(aa);
+    // aa.show(stdout, map);
+    GBA &&gba = genGBA(aa);
+    // gba.show(stdout, map);
+    BA &&ba = BA(gba);
     ba.show(stdout, map);
   }
 }

@@ -24,17 +24,20 @@ private:
   std::map<DynBitset, transition> transitions;
   std::map<DynBitset, DynBitset> redirect;
   std::vector<DynBitset> initial;
+  size_t n_final;
 public:
-  GBA(const std::vector<DynBitset> &initial_)
-    : transitions(), redirect(), initial(initial_) {}
+  GBA(const std::vector<DynBitset> &initial_, size_t n_final_)
+    : transitions(), redirect(), initial(initial_), n_final(n_final_) {}
   bool hasState(const DynBitset &state) const;
-  GBA &setInitial(const std::vector<DynBitset> &initial);
   GBA &addState(DynBitset &&state, transition &&transition);
+  GBA &finalize();
+
+  const std::map<DynBitset, transition> &allStates() const;
+  const std::vector<DynBitset> &initialStates() const;
+  size_t nFinal() const;
   void show(FILE *fp, const Numbering &map) const;
 };
 
-GBA::transition transitionCompose(const std::vector<const VWAA::transition *> ts,
-                                  const VWAA &aa);
 GBA genGBA(const VWAA &aa);
 
 #endif

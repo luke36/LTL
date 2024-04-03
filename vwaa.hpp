@@ -55,7 +55,8 @@ public:
 
 std::optional<VWAA::single_transition>
 composeSingle(const VWAA::single_transition &t1, const VWAA::single_transition &t2);
-void showAP(const DynBitset &p);
+void showAP(FILE *fp, const Numbering &map,
+            const DynBitset &pos, const DynBitset &neg);
 VWAA::transition transitionCompose(const VWAA::transition &t1,
                                    const VWAA::transition &t2);
 VWAA::transition &transitionUnion(VWAA::transition &t1,

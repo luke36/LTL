@@ -154,22 +154,40 @@ VWAA &VWAA::setInitialStates(std::vector<DynBitset> &&initial) {
   return *this;
 }
 
+void showAP(FILE *fp, const Numbering &map,
+            const DynBitset &pos, const DynBitset &neg) {
+  bool nothing = true;
+  for (size_t p = 0; p < pos.size(); p++) {
+    if (pos.has(p)) {
+      if (nothing) {
+        nothing = false;
+      } else {
+        fprintf(fp, " /\\ ");
+      }
+      fprintf(fp, "%s", map.toString(p)->c_str());
+    }
+  }
+  for (size_t n = 0; n < pos.size(); n++) {
+    if (neg.has(n)) {
+      if (nothing) {
+        nothing = false;
+      } else {
+        fprintf(fp, " /\\ ");
+      }
+      fprintf(fp, "~%s", map.toString(n)->c_str());
+    }
+  }
+  if (nothing) {
+    fprintf(fp, "tt");
+  }
+}
+
 void VWAA::show(FILE *fp, const Numbering &map) const {
   for (size_t i = 0; i < transitions.size(); i++) {
     if (!removed_states.has((i))) {
       fprintf(fp, "%lu:\t", i);
       for (auto &t : transitions[i]) {
-        fprintf(fp, "tt");
-        for (size_t j = 0; j < t.pos.size(); j++) {
-          if (t.pos.has(j)) {
-            fprintf(fp, " /\\ %s", map.toString(j)->c_str());
-          }
-        }
-        for (size_t j = 0; j < t.neg.size(); j++) {
-          if (t.neg.has(j)) {
-            fprintf(fp, " /\\ ~%s", map.toString(j)->c_str());
-          }
-        }
+        showAP(fp, map, t.pos, t.neg);
         fprintf(fp, "  ->  tt");
         for (size_t j = 0; j < t.to.size(); j++) {
           if (t.to.has(j)) {

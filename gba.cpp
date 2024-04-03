@@ -15,6 +15,18 @@ bool GBA::hasState(const DynBitset &state) const {
     redirect.find(state) != redirect.end();
 }
 
+const std::map<DynBitset, GBA::transition> &GBA::allStates() const {
+  return transitions;
+}
+
+const std::vector<DynBitset> &GBA::initialStates() const {
+  return initial;
+}
+
+size_t GBA::nFinal() const {
+  return n_final;
+}
+
 static GBA::transition &addTransition(GBA::transition &t1,
                                       GBA::single_transition &&t) {
   bool redundant = false;
@@ -36,18 +48,20 @@ static GBA::transition &addTransition(GBA::transition &t1,
 
 static DynBitset computeFinal(const VWAA::single_transition &t, const VWAA &aa) {
   const std::set<size_t> final_states = aa.finalStates();
-  DynBitset ret(aa.MaxState(), false);
+  DynBitset ret(aa.finalStates().size(), false);
+  size_t i_f = 0;
   for (auto &s : aa.finalStates()) {
     if (!t.to.has(s)) {
-      ret.add(s);
+      ret.add(i_f);
     } else {
       for (auto &tt : aa.stateTransition(s)) {
         if (tt.subsume(t) && !tt.to.has(s)) {
-          ret.add(s);
+          ret.add(i_f);
           break;
         }
       }
     }
+    i_f++;
   }
   return ret;
 }
@@ -77,8 +91,8 @@ static void composeRec(const std::vector<const VWAA::transition *> &ts,
   }
 }
 
-GBA::transition transitionCompose(const std::vector<const VWAA::transition *> ts,
-                                  const VWAA &aa) {
+static GBA::transition
+transitionCompose(const std::vector<const VWAA::transition *> ts, const VWAA &aa) {
   std::vector<VWAA::single_transition> prefix_prod;
   GBA::transition all;
 
@@ -166,10 +180,15 @@ GBA &GBA::addState(DynBitset &&state, transition &&t) {
   return *this;
 }
 
+GBA &GBA::finalize() {
+  redirect.clear();
+  return *this;
+}
+
 #include <stack>
 
 GBA genGBA(const VWAA &aa) {
-  GBA ba(aa.initialStates());
+  GBA ba(aa.initialStates(), aa.finalStates().size());
 
   std::stack<DynBitset> work;
   for (auto &s : aa.initialStates()) {
@@ -192,7 +211,7 @@ GBA genGBA(const VWAA &aa) {
       ba.addState(std::move(s), std::move(t));
     }
   }
-  return ba;
+  return ba.finalize();
 }
 
 void GBA::show(FILE *fp, const Numbering &map) const {
@@ -205,17 +224,7 @@ void GBA::show(FILE *fp, const Numbering &map) const {
     size_t n = number[i->first];
     fprintf(fp, "%lu:\t", n);
     for (auto &t : i->second) {
-      fprintf(fp, "tt");
-      for (size_t j = 0; j < t.t.pos.size(); j++) {
-        if (t.t.pos.has(j)) {
-          fprintf(fp, " /\\ %s", map.toString(j)->c_str());
-        }
-      }
-      for (size_t j = 0; j < t.t.neg.size(); j++) {
-        if (t.t.neg.has(j)) {
-          fprintf(fp, " /\\ ~%s", map.toString(j)->c_str());
-        }
-      }
+      showAP(fp, map, t.t.pos, t.t.neg);
       fprintf(fp, "  ->  %lu", number[t.t.to]);
       fprintf(fp, "  |");
       for (size_t j = 0; j < t.final_set.size(); j++) {
