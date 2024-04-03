@@ -1,11 +1,11 @@
 #include "numbering.hpp"
 
-bool Numbering::addString(const std::string &str) {
+bool Numbering::addString(std::string &&str) {
   auto ret = to_id.insert({str, next});
   if (!ret.second) {
     return false;
   } else {
-    to_str.insert({next, str});
+    to_str.insert({next, std::move(str)});
     next += 1;
     return true;
   }

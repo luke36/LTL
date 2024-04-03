@@ -6,7 +6,7 @@
 
 using std::runtime_error;
 
-static inline int getc_space(FILE *fp) {
+static int getc_space(FILE *fp) {
   int c;
   do {
     c = getc(fp);
@@ -14,7 +14,7 @@ static inline int getc_space(FILE *fp) {
   return c;
 }
 
-static inline bool isvalidprop(int c) {
+static bool isvalidprop(int c) {
   return islower(c) || isdigit(c) || c == '_' || c == '-';
 }
 

@@ -18,6 +18,7 @@ set(SOURCES
   vwaa.cpp
   gba.cpp
   buchi.cpp
+  ts.cpp
 )
 
 add_executable(main ${SOURCES})

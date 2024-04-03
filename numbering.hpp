@@ -12,7 +12,7 @@ class Numbering {
 public:
   Numbering()
     : to_str(), to_id(), next(0) {};
-  bool addString(const std::string &str);
+  bool addString(std::string &&str);
   std::optional<size_t> toId(const std::string &str) const;
   const std::string *toString(size_t id) const;
 };
