@@ -15,6 +15,7 @@ public:
   bool addString(std::string &&str);
   std::optional<size_t> toId(const std::string &str) const;
   const std::string *toString(size_t id) const;
+  size_t size() const;
 };
 
 #endif

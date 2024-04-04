@@ -49,7 +49,7 @@ static GBA::transition &addTransition(GBA::transition &t1,
 static DynBitset computeFinal(const VWAA::single_transition &t, const VWAA &aa) {
   const std::set<size_t> final_states = aa.finalStates();
   DynBitset ret(aa.finalStates().size(), false);
-  size_t i_f = 0;
+  size_t i_f = final_states.size() - 1; // this order seems to generate less states
   for (auto &s : aa.finalStates()) {
     if (!t.to.has(s)) {
       ret.add(i_f);
@@ -61,7 +61,7 @@ static DynBitset computeFinal(const VWAA::single_transition &t, const VWAA &aa) 
         }
       }
     }
-    i_f++;
+    i_f--;
   }
   return ret;
 }

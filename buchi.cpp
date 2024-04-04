@@ -8,10 +8,6 @@ bool BA::single_transition::subsume(const BA::single_transition &other) const {
   return pos.subset(other.pos) && neg == other.neg && to == other.to;
 }
 
-bool BA::state::unfilled() const {
-  return id == 0;
-}
-
 bool BA::state::operator==(const state &other) const {
   if (is_final != other.is_final) {
     return false;
@@ -106,6 +102,22 @@ static size_t allFinalFrom(size_t j, const DynBitset &js) {
   return j;
 }
 
+static BA::state *unfilledState() {
+  BA::state *s = new BA::state();
+  s->id = 0;
+  return s;
+}
+
+static bool isUnfilled(BA::state *s) {
+  return s->id == 0;
+}
+
+static void finalizeID(std::vector<BA::state *> ss) {
+  for (auto s : ss) {
+    s->id--;
+  }
+}
+
 #include <stack>
 
 BA::BA(const GBA &gba) {
@@ -121,7 +133,7 @@ BA::BA(const GBA &gba) {
   }
   for (auto &s : gba.initialStates()) {
     work.push({&s, 0});
-    state *init = new state();
+    state *init = unfilledState();
     to_state.find(s)->second[0] = init;
     initial.push_back(init);
   }
@@ -132,7 +144,7 @@ BA::BA(const GBA &gba) {
     size_t j = p.second;
     auto &v = to_state.find(*x)->second;
     auto s = v[j];
-    if (s->unfilled()) { // undone
+    if (isUnfilled(s)) { // undone
       transition ts;
       if (j == n_final) {
         s->is_final = true;
@@ -141,7 +153,7 @@ BA::BA(const GBA &gba) {
         size_t k = allFinalFrom(j == n_final ? 0 : j, t.final_set);
         auto &w = to_state.find(t.t.to)->second;
         if (w[k] == nullptr) {
-          w[k] = new state();
+          w[k] = unfilledState();
           work.push({&t.t.to, k});
         }
         addTransition(ts, single_transition(t.t.pos, t.t.neg, w[k]));
@@ -152,12 +164,21 @@ BA::BA(const GBA &gba) {
     }
   }
   this->states = std::move(done);
+  finalizeID(this->states);
 }
 
 BA::~BA() {
   for (auto s : states) {
     delete s;
   }
+}
+
+size_t BA::nStates() const {
+  return states.size();
+}
+
+const std::vector<BA::state *> &BA::initialStates() const {
+  return initial;
 }
 
 void BA::show(FILE *fp, const Numbering &map) const {

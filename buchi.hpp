@@ -19,13 +19,12 @@ public:
   typedef std::list<single_transition> transition;
 
   struct state {
-    size_t id; // 0 means undone
+    size_t id;
     bool is_final;
     transition ts;
-    state() : id(0), is_final(false), ts() {}
+    state() : is_final(false), ts() {}
     state(state &&other) = default;
     bool operator==(const state &other) const;
-    bool unfilled() const;
   };
 
 private:
@@ -34,6 +33,8 @@ private:
 public:
   BA(const GBA &gba);
   ~BA();
+  size_t nStates() const;
+  const std::vector<state *> &initialStates() const;
   void show(FILE *fp, const Numbering &map) const;
 };
 

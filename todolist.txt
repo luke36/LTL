@@ -2,4 +2,4 @@
   the above.
 - Use lists in initial states?
 - Utilize cache.
-- Order the finals.
+- Optimize DFS.

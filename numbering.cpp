@@ -28,3 +28,7 @@ const std::string *Numbering::toString(size_t id) const {
     return nullptr;
   }
 }
+
+size_t Numbering::size() const {
+  return next;
+}

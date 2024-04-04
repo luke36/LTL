@@ -28,6 +28,9 @@ public:
   TS &setInitial(size_t initial);
   TS &addState(size_t state, DynBitset &&ap);
   TS &addTransition(size_t from, size_t action, size_t to);
+  size_t nStates() const;
+  const state &getState(size_t i) const;
+  const std::vector<size_t> &getInitial() const;
   void show(FILE *fp, const Numbering &ap, const Numbering &act) const;
 };
 

@@ -16,6 +16,18 @@ TS &TS::addTransition(size_t from, size_t action, size_t to) {
   return *this;
 }
 
+size_t TS::nStates() const {
+  return states.size();
+}
+
+const TS::state &TS::getState(size_t i) const {
+  return states[i];
+}
+
+const std::vector<size_t> &TS::getInitial() const {
+  return initial;
+}
+
 void TS::show(FILE *fp, const Numbering &ap, const Numbering &act) const {
   for (size_t i = 0; i < states.size(); i++) {
     fprintf(fp, "%lu:", i);
@@ -49,8 +61,6 @@ static bool endOfLine(FILE *fp) {
     return false;
   }
 }
-
-#include <fstream>
 
 TS readTS(FILE *fp, Numbering &ap, Numbering &act) {
   size_t n_state, n_transition;

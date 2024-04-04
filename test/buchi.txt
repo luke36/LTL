@@ -1,12 +1,12 @@
 !(!GFp \/ G(!q \/ Fr))
 
-G(p\/q)
+!G(p\/q)
 
-X(p/\r)
+!X(p/\r)
 
-!(Fp)
+!!(Fp)
 
-qU!p
+!(qU!p)
 
 p
 

@@ -19,6 +19,7 @@ set(SOURCES
   gba.cpp
   buchi.cpp
   ts.cpp
+  verify.cpp
 )
 
 add_executable(main ${SOURCES})
