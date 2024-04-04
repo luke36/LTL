@@ -8,7 +8,7 @@ struct prod_state {
   prod_state(const TS *ts_, size_t ts_state_, const BA::state *ba_state_)
     : ts(ts_), ts_state(ts_state_), ba_state(ba_state_) {}
   size_t index() const {
-    return ts_state * ts->nStates() + ba_state->id;
+    return ba_state->id * ts->nStates() + ts_state;
   };
   const TS::transition &TSTransition() const {
     return ts->getState(ts_state).ts;
