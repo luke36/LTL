@@ -13,35 +13,40 @@ int main() {
   Numbering ap;
   Numbering act;
   TS &&ts = readTS(input, ap, act);
+  ts.show(output, ap, act);
 
   size_t n_all;
   size_t n_one;
   fscanf(input, "%lu %lu", &n_all, &n_one);
   for (size_t _ = 0; _ < n_all; _++) {
-    fprintf(output, "%d\n",
-            productIsEmpty
-            (ts,
-             BA
-             (genGBA
-              (genVWAA
-               (ap.size(),
-                mkNegation
-                (parse(input, ap))
-                .toNNF())))));
+    auto &&ret =
+      productIsEmpty
+      (ts,
+       BA
+       (genGBA
+        (genVWAA
+         (ap.size(),
+          mkNegation
+          (parse(input, ap))
+          .toNNF()))));
+    ret.show(output, ts, ap);
+    fprintf(output, "\n");
   }
   for (size_t _ = 0; _ < n_one; _++) {
     size_t init;
     fscanf(input, "%lu", &init);
-    fprintf(output, "%d\n",
-            productIsEmptyFrom
-            (ts,
-             BA
-             (genGBA
-              (genVWAA
-               (ap.size(),
-                mkNegation
-                (parse(input, ap))
-                .toNNF()))),
-             init));
+    auto &&ret =
+      productIsEmptyFrom
+      (ts,
+       BA
+       (genGBA
+        (genVWAA
+         (ap.size(),
+          mkNegation
+          (parse(input, ap))
+          .toNNF()))),
+       init);
+    ret.show(output, ts, ap);
+    fprintf(output, "\n");
   }
 }

@@ -33,7 +33,21 @@ satisfyAP(const DynBitset &ap, const DynBitset &pos, const DynBitset &neg) {
   return pos.subset(ap) && ap.exclude(neg);
 }
 
-static bool
+static std::vector<size_t> stackToVec(std::stack<prod_state> &s) {
+  std::stack<size_t> rev;
+  while (!s.empty()) {
+    rev.push(s.top().ts_state);
+    s.pop();
+  }
+  std::vector<size_t> ret;
+  while (!rev.empty()) {
+    ret.push_back(rev.top());
+    rev.pop();
+  }
+  return ret;
+}
+
+static std::optional<std::vector<size_t>>
 cycleCheck(std::stack<prod_state> &frag, prod_state s, DynBitset &visit) {
   frag.push(s);
   visit.add(s.index());
@@ -46,7 +60,7 @@ cycleCheck(std::stack<prod_state> &frag, prod_state s, DynBitset &visit) {
         prod_state next(s_.ts, t1.to, t2.to);
         if (satisfyAP(next.TSAP(), t2.pos, t2.neg)) {
           if (next == s) {
-            return true;
+            return stackToVec(frag);
           } else if (!visit.has(next.index())) {
             frag.push(next);
             visit.add(next.index());
@@ -63,10 +77,10 @@ cycleCheck(std::stack<prod_state> &frag, prod_state s, DynBitset &visit) {
       frag.pop();
     }
   } while (!frag.empty());
-  return false;
+  return {};
 }
 
-static bool
+static std::optional<std::vector<size_t>>
 reachableCycle(std::stack<prod_state> &frag, prod_state s,
                DynBitset &visit_outer, DynBitset &visit_inner) {
   frag.push(s);
@@ -96,17 +110,18 @@ reachableCycle(std::stack<prod_state> &frag, prod_state s,
       frag.pop();
       if (s.isFinal()) {
         std::stack<prod_state> loop;
-        if (cycleCheck(loop, s, visit_inner)) {
-          return true;
+        auto &&ret = cycleCheck(loop, s, visit_inner);
+        if (ret) {
+          return ret;
         }
       }
     }
   } while (!frag.empty());
 
-  return false;
+  return {};
 }
 
-bool productIsEmptyFrom(const TS &ts, const BA &ba, size_t init) {
+verify_return productIsEmptyFrom(const TS &ts, const BA &ba, size_t init) {
   std::stack<prod_state> stack;
   size_t n_prod_states = ts.nStates() * ba.nStates();
   DynBitset outer(n_prod_states, false);
@@ -114,16 +129,17 @@ bool productIsEmptyFrom(const TS &ts, const BA &ba, size_t init) {
   for (auto &s2 : ba.initialStates()) {
     for (auto &t : s2->ts) {
       if (satisfyAP(ts.getState(init).ap, t.pos, t.neg)) {
-        if (reachableCycle(stack, {&ts, init, t.to}, outer, inner)) {
-          return false;
+        auto &&maybe_loop = reachableCycle(stack, {&ts, init, t.to}, outer, inner);
+        if (maybe_loop) {
+          return {stackToVec(stack), std::move(maybe_loop.value())};
         }
       }
     }
   }
-  return true;
+  return {};
 }
 
-bool productIsEmpty(const TS &ts, const BA &ba) {
+verify_return productIsEmpty(const TS &ts, const BA &ba) {
   std::stack<prod_state> stack;
   size_t n_prod_states = ts.nStates() * ba.nStates();
   DynBitset outer(n_prod_states, false);
@@ -132,13 +148,48 @@ bool productIsEmpty(const TS &ts, const BA &ba) {
     for (auto &s2 : ba.initialStates()) {
       for (auto &t : s2->ts) {
         if (satisfyAP(ts.getState(s1).ap, t.pos, t.neg)) {
-          if (reachableCycle(stack, {&ts, s1, t.to}, outer, inner)) {
-            return false;
+          auto &&maybe_loop = reachableCycle(stack, {&ts, s1, t.to}, outer, inner);
+          if (maybe_loop) {
+            return {stackToVec(stack), std::move(maybe_loop.value())};
           }
         }
       }
     }
   }
-  return true;
+  return {};
 }
 
+void verify_return::show(FILE *fp, const TS &ts, const Numbering &map) const {
+  if (empty) {
+    fprintf(fp, "satisfied.");
+  } else {
+    fprintf(fp, "unsatisfied, counterexample:\n\t");
+    for (auto s : finite_fragment) {
+      fprintf(fp, "%lu {", s);
+      auto &ap = ts.getState(s).ap;
+      for (size_t i = 0; i < ap.size(); i++) {
+        if (ap.has(i)) {
+          fprintf(fp, " %s", map.toString(i)->c_str());
+        }
+      }
+      fprintf(fp, " }");
+      fprintf(fp, " --> ");
+    }
+
+    fprintf(fp, "( ");
+
+    for (auto s : loop_fragment) {
+      fprintf(fp, "%lu {", s);
+      auto &ap = ts.getState(s).ap;
+      for (size_t i = 0; i < ap.size(); i++) {
+        if (ap.has(i)) {
+          fprintf(fp, " %s", map.toString(i)->c_str());
+        }
+      }
+      fprintf(fp, " }");
+      fprintf(fp, " --> ");
+    }
+
+    fprintf(fp, "... )");
+  }
+}
