@@ -13,6 +13,6 @@ Please input in LF format.
 Action names and atom proposition names should contain only lower letters,
 underlines, and hyphens.
 
-The LTL-to-BA algorithm is almost the same as ltl2ba, or the paper "Fast LTL to
-Büchi Automata Translation". But we do not implement the optimization using
-SCCs to relax the equality condition.
+The LTL-to-BA algorithm is almost the same as ltl2ba, or the 2001 paper "Fast
+LTL to Büchi Automata Translation". But we do not implement the optimization
+using SCCs to relax the equality condition.

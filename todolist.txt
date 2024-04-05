@@ -2,5 +2,4 @@
   the above.
 - Use lists in initial states?
 - Utilize cache.
-- Optimize DFS.
-- Improve TS parser.
+- Remove dead states.

@@ -1,11 +1,5 @@
-#include "ltl.hpp"
 #include "parse.hpp"
-#include "nnf.hpp"
-#include "gba.hpp"
-#include "buchi.hpp"
-#include "ts.hpp"
 #include "verify.hpp"
-#include <vector>
 
 int main() {
   FILE *input = stdin;
@@ -13,7 +7,6 @@ int main() {
   Numbering ap;
   Numbering act;
   TS &&ts = readTS(input, ap, act);
-  ts.show(output, ap, act);
 
   size_t n_all;
   size_t n_one;
@@ -29,7 +22,7 @@ int main() {
           mkNegation
           (parse(input, ap))
           .toNNF()))));
-    ret.show(output, ts, ap);
+    ret.show(output, ap);
     fprintf(output, "\n");
   }
   for (size_t _ = 0; _ < n_one; _++) {
@@ -45,8 +38,8 @@ int main() {
           mkNegation
           (parse(input, ap))
           .toNNF()))),
-       init);
-    ret.show(output, ts, ap);
+       &ts.getState(init));
+    ret.show(output, ap);
     fprintf(output, "\n");
   }
 }
