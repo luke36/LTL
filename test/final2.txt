@@ -28,6 +28,6 @@ n1 w1 c1 n2 w2 c2 y0 y1
 
 4 0
 !F(c1/\c2)
-!GFw1 \/ GFc1
+GFw1 -> GFc1
 GFc1 \/ GFc2
-!(!FGw1 \/ GFc1) \/ (!GFw1 \/ GFc1)
+(FGw1 -> GFc1) -> (GFw1 -> GFc1)

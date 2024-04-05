@@ -25,6 +25,14 @@ void FormulaDisj::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, ")");
 }
 
+void FormulaImply::show(FILE *fp, const Numbering &map) const {
+  fprintf(fp, "(");
+  f1.show(fp, map);
+  fprintf(fp, " -> ");
+  f2.show(fp, map);
+  fprintf(fp, ")");
+}
+
 void FormulaNext::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, "X ");
   f.show(fp, map);
@@ -67,6 +75,11 @@ Formula mkConj(Formula f1, Formula f2) {
 
 Formula mkDisj(Formula f1, Formula f2) {
   FormulaBase *p = new FormulaDisj(f1, f2);
+  return shared_ptr<FormulaBase>(p);
+}
+
+Formula mkImply(Formula f1, Formula f2) {
+  FormulaBase *p = new FormulaImply(f1, f2);
   return shared_ptr<FormulaBase>(p);
 }
 
@@ -120,6 +133,14 @@ NNF FormulaDisj::toNNF() const {
 
 NNF FormulaDisj::pushNegation() const {
   return mkNNFConj(f1.pushNegation(), f2.pushNegation());
+}
+
+NNF FormulaImply::toNNF() const {
+  return mkNNFDisj(f1.pushNegation(), f2.toNNF());
+}
+
+NNF FormulaImply::pushNegation() const {
+  return mkNNFConj(f1.toNNF(), f2.pushNegation());
 }
 
 NNF FormulaNext::toNNF() const {

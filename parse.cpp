@@ -103,6 +103,22 @@ static Formula parseUntil(FILE *fp, const Numbering &map) {
   }
 }
 
+static Formula parseImply(FILE *fp, const Numbering &map) {
+  Formula first = parseUntil(fp, map);
+  int c = getc_space(fp);
+  switch (c) {
+  case '-':
+    if (getc(fp) != '>') {
+      throw runtime_error("parse: Expected ‘>’ after ‘-’");
+    } else {
+      return mkImply(first, parseImply(fp, map));
+    }
+  default:
+    ungetc(c, fp);
+    return first;
+  }
+}
+
 Formula parse(FILE *fp, const Numbering &map) {
-  return parseUntil(fp, map);
+  return parseImply(fp, map);
 }

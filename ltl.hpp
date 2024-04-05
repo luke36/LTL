@@ -71,6 +71,16 @@ public:
   ~FormulaDisj() override = default;
 };
 
+class FormulaImply : public FormulaBase {
+  const Formula f1, f2;
+public:
+  FormulaImply(Formula f1_, Formula f2_) : f1(f1_), f2(f2_) {}
+  void show(FILE *fp, const Numbering &map) const override;
+  NNF toNNF() const override;
+  NNF pushNegation() const override;
+  ~FormulaImply() override = default;
+};
+
 class FormulaNext : public FormulaBase {
   const Formula f;
 public:
@@ -115,6 +125,7 @@ Formula mkAtom(size_t id);
 Formula mkNegation(Formula f);
 Formula mkConj(Formula f1, Formula f2);
 Formula mkDisj(Formula f1, Formula f2);
+Formula mkImply(Formula f1, Formula f2);
 Formula mkNext(Formula f);
 Formula mkAlways(Formula f);
 Formula mkEvent(Formula f);
