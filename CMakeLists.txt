@@ -10,7 +10,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SOURCES
   ltl.cpp
   parse.cpp
-  util.cpp
   main.cpp
   nnf.cpp
   numbering.cpp

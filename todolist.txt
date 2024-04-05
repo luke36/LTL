@@ -1,5 +1,1 @@
-- Support operation between DynBitset of different sizes. Then we do not need
-  the above.
-- Use lists in initial states?
-- Utilize cache.
-- Remove dead states.
+Remove dead states.

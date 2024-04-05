@@ -16,3 +16,25 @@ underlines, and hyphens.
 The LTL-to-BA algorithm is almost the same as ltl2ba, or the 2001 paper "Fast
 LTL to Büchi Automata Translation". But we do not implement the optimization
 using SCCs to relax the equality condition.
+
+ltl.hpp : AST of LTL formulae.
+ltl.cpp : Translate LTL formulae to negation normal form.
+parse.cpp, parse.hpp : Parse LTL formulae.
+nnf.hpp : AST of LTL formulae in negation normal form.
+nnf.cpp : Translate LTL formulae in negation normal form to equivalent very weak
+          alternating automata.
+numbering.hpp, numbering.cpp : Translate between atom proposition names and
+                               action names and their (integer) identifier.
+dynbitset.hpp, dynbitset.cpp : Bitset with dynamic sizes.
+vwaa.hpp, vwaa.cpp : Very weak alternating automate.
+gba.hpp : Generalize (nondeterministic) Büchi Automata. The definition differs
+          from the textbook by using final transitions instead of final states.
+gba.cpp : Translation from VWAA to GBA.
+buchi.hpp : (Nondeterministic) Büchi Automata.
+buchi.cpp : Translation from GBA to BA.
+ts.hpp, ts.cpp : Transition systems.
+verify.cpp, verify.hpp : Decide whether the product transition system is
+                         empty. The algorithm is a direct copy of "Principles of
+                         Model Checking", page 210-211. Note that we do not
+                         create the product explicitly.
+main.cpp : Entry.
