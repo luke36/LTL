@@ -80,16 +80,81 @@ public:
     delete [] blocks;
   }
 
-  size_t size() const;
-  DynBitset &add(size_t x);
-  DynBitset &remove(size_t x);
-  DynBitset &unify(const DynBitset &other);
-  DynBitset &intersect(const DynBitset &other);
-  bool has(size_t x) const;
-  bool subset(const DynBitset &other) const;
-  bool exclude(const DynBitset &other) const;
-  bool operator<(const DynBitset &other) const;
-  bool operator==(const DynBitset &other) const;
+  size_t size() const {
+    return sz;
+  }
+
+  DynBitset &add(size_t x) {
+    size_t iblock = x / blockbit;
+    size_t i = x % blockbit;
+    blocks[iblock] |= ((block_type)1 << i);
+    return *this;
+  }
+
+  DynBitset &remove(size_t x) {
+    size_t iblock = x / blockbit;
+    size_t i = x % blockbit;
+    blocks[iblock] &= ~((block_type)1 << i);
+    return *this;
+  }
+
+  DynBitset &unify(const DynBitset &other) {
+    for (size_t i = 0; i < nblock; i++) {
+      blocks[i] |= other.blocks[i];
+    }
+    return *this;
+  }
+
+  DynBitset &intersect(const DynBitset &other) {
+    for (size_t i = 0; i < nblock; i++) {
+      blocks[i] &= other.blocks[i];
+    }
+    return *this;
+  }
+
+  bool has(size_t x) const {
+    size_t iblock = x / blockbit;
+    size_t i = x % blockbit;
+    return (blocks[iblock] & ((block_type)1 << i));
+  }
+
+  bool subset(const DynBitset &other) const {
+    for (size_t i = 0; i < nblock; i++) {
+      if (blocks[i] & ~other.blocks[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool exclude(const DynBitset &other) const {
+    for (size_t i = 0; i < nblock; i++) {
+      if (blocks[i] & other.blocks[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool operator<(const DynBitset &other) const{
+    for (size_t i = 0; i < nblock; i++) {
+      if (blocks[i] < other.blocks[i]) {
+        return true;
+      } else if (blocks[i] > other.blocks[i]) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  bool operator==(const DynBitset &other) const {
+    for (size_t i = 0; i < nblock; i++) {
+      if (blocks[i] != other.blocks[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 };
 
 #endif

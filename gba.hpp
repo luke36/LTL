@@ -15,8 +15,15 @@ public:
     single_transition(single_transition &&other) = default;
     single_transition &operator=(const single_transition &other) = default;
     single_transition &operator=(single_transition &&other) = default;
-    bool operator==(const single_transition &other) const;
-    bool subsume(const single_transition &other) const;
+
+    bool operator==(const single_transition &other) const {
+      return final_set == other.final_set && t == other.t;
+    }
+
+    bool subsume(const single_transition &other) const {
+      return
+        other.final_set.subset(final_set) && t.subsume(other.t);
+    }
   };
   typedef std::list<single_transition> transition;
 
@@ -28,13 +35,32 @@ private:
 public:
   GBA(const std::vector<DynBitset> &initial_, size_t n_final_)
     : transitions(), redirect(), initial(initial_), n_final(n_final_) {}
-  bool hasState(const DynBitset &state) const;
-  GBA &addState(DynBitset &&state, transition &&transition);
-  GBA &finalize();
 
-  const std::map<DynBitset, transition> &allStates() const;
-  const std::vector<DynBitset> &initialStates() const;
-  size_t nFinal() const;
+  bool hasState(const DynBitset &state) const {
+    return
+      transitions.find(state) != transitions.end() ||
+      redirect.find(state) != redirect.end();
+  }
+
+  GBA &addState(DynBitset &&state, transition &&transition);
+
+  GBA &finalize() {
+    redirect.clear();
+    return *this;
+  }
+
+  const std::map<DynBitset, transition> &allStates() const {
+    return transitions;
+  }
+
+  const std::vector<DynBitset> &initialStates() const {
+    return initial;
+  }
+
+  size_t nFinal() const {
+    return n_final;
+  }
+
   void show(FILE *fp, const Numbering &map) const;
 };
 

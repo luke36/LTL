@@ -27,8 +27,20 @@ public:
     single_transition(single_transition &&other) = default;
     single_transition &operator=(const single_transition &other) = default;
     single_transition &operator=(single_transition &&other) = default;
-    bool operator==(const single_transition &other) const;
-    bool subsume(const single_transition &other) const;
+
+    bool operator==(const single_transition &other) const {
+      return
+        pos == other.pos &&
+        neg == other.neg &&
+        to == other.to;
+    }
+
+    bool subsume(const single_transition &other) const {
+      return
+        pos.subset(other.pos) &&
+        neg.subset(other.neg) &&
+        to.subset(other.to);
+    }
   };
   typedef std::list<single_transition> transition;
 
@@ -42,13 +54,31 @@ public:
   VWAA (size_t n_ap_, size_t max_state)
     : n_ap(n_ap_), transitions(), initial_states(), final_states(),
       removed_states(max_state, false) {}
-  size_t MaxState() const;
-  size_t nAP() const;
-  size_t nextStateId() const;
+
+  size_t MaxState() const {
+    return transitions.size();
+  }
+  size_t nAP() const {
+    return n_ap;
+  }
+
+  size_t nextStateId() const {
+    return transitions.size();
+  }
+
   size_t addState(transition &&t, bool is_final);
-  const transition &stateTransition(size_t s) const;
-  const std::vector<DynBitset> &initialStates() const;
-  const std::set<size_t> &finalStates() const;
+  const transition &stateTransition(size_t s) const {
+    return transitions[s];
+  }
+
+  const std::vector<DynBitset> &initialStates() const {
+    return initial_states;
+  }
+
+  const std::set<size_t> &finalStates() const {
+    return final_states;
+  }
+
   VWAA &setInitialStates(std::vector<DynBitset> &&initial);
   void show(FILE *fp, const Numbering &map) const;
 };

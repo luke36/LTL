@@ -53,53 +53,6 @@ void NNFRelease::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, ")");
 }
 
-using std::shared_ptr;
-
-NNF mkNNFTrue() {
-  NNFBase *p = new NNFTrue();
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFFalse() {
-  NNFBase *p = new NNFFalse();
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFAtom(size_t id) {
-  NNFBase *p = new NNFAtom(id);
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFNegAtom(size_t id) {
-  NNFBase *p = new NNFNegAtom(id);
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFConj(NNF f1, NNF f2) {
-  NNFBase *p = new NNFConj(f1, f2);
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFDisj(NNF f1, NNF f2) {
-  NNFBase *p = new NNFDisj(f1, f2);
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFNext(NNF f) {
-  NNFBase *p = new NNFNext(f);
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFUntil(NNF f1, NNF f2) {
-  NNFBase *p = new NNFUntil(f1, f2);
-  return shared_ptr<NNFBase>(p);
-}
-
-NNF mkNNFRelease(NNF f1, NNF f2) {
-  NNFBase *p = new NNFRelease(f1, f2);
-  return shared_ptr<NNFBase>(p);
-}
-
 size_t NNFTrue::nTempral(std::set<size_t> &, std::set<size_t> &) const {
   return 0;
 }

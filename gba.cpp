@@ -1,32 +1,5 @@
 #include "gba.hpp"
 
-bool GBA::single_transition::operator==(const single_transition &other) const {
-  return final_set == other.final_set && t == other.t;
-}
-
-bool GBA::single_transition::subsume(const single_transition &other) const {
-  return
-    other.final_set.subset(final_set) && t.subsume(other.t);
-}
-
-bool GBA::hasState(const DynBitset &state) const {
-  return
-    transitions.find(state) != transitions.end() ||
-    redirect.find(state) != redirect.end();
-}
-
-const std::map<DynBitset, GBA::transition> &GBA::allStates() const {
-  return transitions;
-}
-
-const std::vector<DynBitset> &GBA::initialStates() const {
-  return initial;
-}
-
-size_t GBA::nFinal() const {
-  return n_final;
-}
-
 static GBA::transition &addTransition(GBA::transition &t1,
                                       GBA::single_transition &&t) {
   bool redundant = false;
@@ -177,11 +150,6 @@ GBA &GBA::addState(DynBitset &&state, transition &&t) {
   } else {
     transitions.insert({std::move(state), std::move(t)});
   }
-  return *this;
-}
-
-GBA &GBA::finalize() {
-  redirect.clear();
   return *this;
 }
 

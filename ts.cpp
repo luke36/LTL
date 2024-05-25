@@ -1,34 +1,6 @@
 #include "ts.hpp"
 #include "vwaa.hpp"
 
-TS &TS::addState(size_t state, DynBitset &&ap) {
-  states[state].ap = std::move(ap);
-  states[state].id = state;
-  return *this;
-}
-
-TS &TS::setInitial(size_t initial) {
-  this->initial.push_back(states + initial);
-  return *this;
-}
-
-TS &TS::addTransition(size_t from, size_t action, size_t to) {
-  states[from].ts.emplace_back(single_transition(action, states + to));
-  return *this;
-}
-
-size_t TS::nStates() const {
-  return n_state;
-}
-
-const TS::state &TS::getState(size_t i) const {
-  return states[i];
-}
-
-const std::vector<TS::state *> &TS::getInitial() const {
-  return initial;
-}
-
 void TS::show(FILE *fp, const Numbering &ap, const Numbering &act) const {
   for (size_t i = 0; i < n_state; i++) {
     fprintf(fp, "%lu:", i);

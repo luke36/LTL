@@ -1,13 +1,5 @@
 #include "buchi.hpp"
 
-bool BA::single_transition::operator==(const BA::single_transition &other) const {
-  return pos == other.pos && neg == other.neg && to == other.to;
-}
-
-bool BA::single_transition::subsume(const BA::single_transition &other) const {
-  return pos.subset(other.pos) && neg == other.neg && to == other.to;
-}
-
 bool BA::state::operator==(const state &other) const {
   if (is_final != other.is_final) {
     return false;
@@ -165,20 +157,6 @@ BA::BA(const GBA &gba) {
   }
   this->states = std::move(done);
   finalizeID(this->states);
-}
-
-BA::~BA() {
-  for (auto s : states) {
-    delete s;
-  }
-}
-
-size_t BA::nStates() const {
-  return states.size();
-}
-
-const std::vector<BA::state *> &BA::initialStates() const {
-  return initial;
 }
 
 void BA::show(FILE *fp, const Numbering &map) const {

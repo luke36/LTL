@@ -12,8 +12,6 @@ set(SOURCES
   parse.cpp
   main.cpp
   nnf.cpp
-  numbering.cpp
-  dynbitset.cpp
   vwaa.cpp
   gba.cpp
   buchi.cpp
@@ -27,6 +25,7 @@ target_compile_options(main
   PRIVATE
     -g
     -O2
+    # -flto
     -Wall
     -Wextra
 )

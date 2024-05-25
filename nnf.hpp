@@ -7,10 +7,7 @@
 #include "numbering.hpp"
 #include "vwaa.hpp"
 
-class NNF;
-
 class NNFBase {
-  friend NNF;
 public:
   virtual size_t nTempral(std::set<size_t> &pos, std::set<size_t> &neg) const = 0;
   virtual std::list<DynBitset> dnf(size_t max) const = 0;
@@ -21,7 +18,6 @@ public:
 };
 
 class NNF {
-  friend NNFBase;
   std::shared_ptr<NNFBase> f;
 public:
   size_t nTempral(std::set<size_t> &pos, std::set<size_t> &neg) const {
@@ -153,15 +149,50 @@ public:
   ~NNFRelease() override = default;
 };
 
-NNF mkNNFTrue();
-NNF mkNNFFalse();
-NNF mkNNFAtom(size_t id);
-NNF mkNNFNegAtom(size_t id);
-NNF mkNNFConj(NNF f1, NNF f2);
-NNF mkNNFDisj(NNF f1, NNF f2);
-NNF mkNNFNext(NNF f);
-NNF mkNNFUntil(NNF f1, NNF f2);
-NNF mkNNFRelease(NNF f1, NNF f2);
+inline NNF mkNNFTrue() {
+  NNFBase *p = new NNFTrue();
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFFalse() {
+  NNFBase *p = new NNFFalse();
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFAtom(size_t id) {
+  NNFBase *p = new NNFAtom(id);
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFNegAtom(size_t id) {
+  NNFBase *p = new NNFNegAtom(id);
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFConj(NNF f1, NNF f2) {
+  NNFBase *p = new NNFConj(f1, f2);
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFDisj(NNF f1, NNF f2) {
+  NNFBase *p = new NNFDisj(f1, f2);
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFNext(NNF f) {
+  NNFBase *p = new NNFNext(f);
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFUntil(NNF f1, NNF f2) {
+  NNFBase *p = new NNFUntil(f1, f2);
+  return std::shared_ptr<NNFBase>(p);
+}
+
+inline NNF mkNNFRelease(NNF f1, NNF f2) {
+  NNFBase *p = new NNFRelease(f1, f2);
+  return std::shared_ptr<NNFBase>(p);
+}
 
 VWAA genVWAA(size_t n_atom, NNF f);
 

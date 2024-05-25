@@ -13,8 +13,14 @@ public:
     single_transition(const DynBitset &pos_, const DynBitset &neg_, state *to_)
       : pos(pos_), neg(neg_), to(to_) {}
     single_transition(single_transition &&other) = default;
-    bool operator==(const single_transition &other) const;
-    bool subsume(const single_transition &other) const;
+
+    bool operator==(const single_transition &other) const {
+      return pos == other.pos && neg == other.neg && to == other.to;
+    }
+
+    bool subsume(const single_transition &other) const {
+      return pos.subset(other.pos) && neg == other.neg && to == other.to;
+    }
   };
   typedef std::list<single_transition> transition;
 
@@ -32,9 +38,20 @@ private:
   std::vector<state *> initial;
 public:
   BA(const GBA &gba);
-  ~BA();
-  size_t nStates() const;
-  const std::vector<state *> &initialStates() const;
+  ~BA() {
+    for (auto s : states) {
+      delete s;
+    }
+  }
+
+  size_t nStates() const {
+    return states.size();
+  }
+
+  const std::vector<state *> &initialStates() const {
+    return initial;
+  }
+
   void show(FILE *fp, const Numbering &map) const;
 };
 

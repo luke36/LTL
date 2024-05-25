@@ -121,14 +121,49 @@ public:
   ~FormulaUntil() override = default;
 };
 
-Formula mkAtom(size_t id);
-Formula mkNegation(Formula f);
-Formula mkConj(Formula f1, Formula f2);
-Formula mkDisj(Formula f1, Formula f2);
-Formula mkImply(Formula f1, Formula f2);
-Formula mkNext(Formula f);
-Formula mkAlways(Formula f);
-Formula mkEvent(Formula f);
-Formula mkUntil(Formula f1, Formula f2);
+inline Formula mkAtom(size_t id) {
+  FormulaBase *p = new FormulaAtom(id);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkNegation(Formula f) {
+  FormulaBase *p = new FormulaNegation(f);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkConj(Formula f1, Formula f2) {
+  FormulaBase *p = new FormulaConj(f1, f2);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkDisj(Formula f1, Formula f2) {
+  FormulaBase *p = new FormulaDisj(f1, f2);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkImply(Formula f1, Formula f2) {
+  FormulaBase *p = new FormulaImply(f1, f2);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkNext(Formula f) {
+  FormulaBase *p = new FormulaNext(f);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkAlways(Formula f) {
+  FormulaBase *p = new FormulaAlways(f);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkEvent(Formula f) {
+  FormulaBase *p = new FormulaEvent(f);
+  return std::shared_ptr<FormulaBase>(p);
+}
+
+inline Formula mkUntil(Formula f1, Formula f2) {
+  FormulaBase *p = new FormulaUntil(f1, f2);
+  return std::shared_ptr<FormulaBase>(p);
+}
 
 #endif

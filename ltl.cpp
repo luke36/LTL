@@ -56,53 +56,6 @@ void FormulaUntil::show(FILE *fp, const Numbering &map) const {
   fprintf(fp, ")");
 }
 
-using std::shared_ptr;
-
-Formula mkAtom(size_t id) {
-  FormulaBase *p = new FormulaAtom(id);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkNegation(Formula f) {
-  FormulaBase *p = new FormulaNegation(f);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkConj(Formula f1, Formula f2) {
-  FormulaBase *p = new FormulaConj(f1, f2);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkDisj(Formula f1, Formula f2) {
-  FormulaBase *p = new FormulaDisj(f1, f2);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkImply(Formula f1, Formula f2) {
-  FormulaBase *p = new FormulaImply(f1, f2);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkNext(Formula f) {
-  FormulaBase *p = new FormulaNext(f);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkAlways(Formula f) {
-  FormulaBase *p = new FormulaAlways(f);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkEvent(Formula f) {
-  FormulaBase *p = new FormulaEvent(f);
-  return shared_ptr<FormulaBase>(p);
-}
-
-Formula mkUntil(Formula f1, Formula f2) {
-  FormulaBase *p = new FormulaUntil(f1, f2);
-  return shared_ptr<FormulaBase>(p);
-}
-
 NNF FormulaAtom::toNNF() const {
   return mkNNFAtom(id);
 }

@@ -1,20 +1,6 @@
 #include "vwaa.hpp"
 #include <optional>
 
-bool VWAA::single_transition::subsume(const single_transition &other) const {
-  return
-    pos.subset(other.pos) &&
-    neg.subset(other.neg) &&
-    to.subset(other.to);
-}
-
-bool VWAA::single_transition::operator==(const single_transition &other) const {
-  return
-    pos == other.pos &&
-    neg == other.neg &&
-    to == other.to;
-}
-
 std::optional<VWAA::single_transition>
 composeSingle(const VWAA::single_transition &t1, const VWAA::single_transition &t2) {
   VWAA::single_transition ret(t1);
@@ -26,14 +12,6 @@ composeSingle(const VWAA::single_transition &t1, const VWAA::single_transition &
   } else {
     return ret;
   }
-}
-
-size_t VWAA::MaxState() const {
-  return transitions.size();
-}
-
-size_t VWAA::nAP() const {
-  return n_ap;
 }
 
 static VWAA::transition &addTransition(VWAA::transition &t1,
@@ -79,10 +57,6 @@ VWAA::transition &transitionUnion(VWAA::transition &t1,
   return t1;
 }
 
-size_t VWAA::nextStateId() const {
-  return transitions.size();
-}
-
 size_t VWAA::addState(transition &&t, bool is_final) {
   bool redundant = false;
   size_t equal_state;
@@ -120,18 +94,6 @@ size_t VWAA::addState(transition &&t, bool is_final) {
     }
     return s;
   }
-}
-
-const VWAA::transition &VWAA::stateTransition(size_t s) const {
-  return transitions[s];
-}
-
-const std::vector<DynBitset> &VWAA::initialStates() const {
-  return initial_states;
-}
-
-const std::set<size_t> &VWAA::finalStates() const {
-  return final_states;
 }
 
 VWAA &VWAA::setInitialStates(std::vector<DynBitset> &&initial) {
