@@ -3,8 +3,9 @@
 
 #include "ltl.hpp"
 #include "numbering.hpp"
-#include <map>
 
 Formula parse(FILE *, const Numbering &map);
+void parseCLIArgs(int argc, char *argv[],
+                  FILE *&ts, FILE *&formula, FILE *&output);
 
 #endif

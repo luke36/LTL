@@ -1,6 +1,5 @@
 #include "parse.hpp"
 #include <stdexcept>
-#include <map>
 
 using std::runtime_error;
 
@@ -13,7 +12,7 @@ static int getc_space(FILE *fp) {
 }
 
 static bool isvalidprop(int c) {
-  return islower(c) || isdigit(c) || c == '_' || c == '-';
+  return islower(c) || isdigit(c) || c == '_';
 }
 
 static Formula parseSingle(FILE *fp, const Numbering &map) {
@@ -120,3 +119,39 @@ static Formula parseImply(FILE *fp, const Numbering &map) {
 Formula parse(FILE *fp, const Numbering &map) {
   return parseImply(fp, map);
 }
+
+static void skipLowerEqual(char *&str) {
+  while (islower(*(++str)))
+    ;
+  if (*str != '=') {
+    throw runtime_error("parse: Unknown command-line argument");
+  } else {
+    str++;
+  }
+}
+
+void parseCLIArgs(int argc, char *argv[],
+                  FILE *&ts, FILE *&formula, FILE *&output) {
+  for (int i = 1; i < argc; i++) {
+    char *str = argv[i];
+    while (*(++str) == '-')
+      ;
+    switch (*str) {
+    case 't':
+      skipLowerEqual(str);
+      ts = fopen(str, "r");
+      break;
+    case 'f':
+      skipLowerEqual(str);
+      formula = fopen(str, "r");
+      break;
+    case 'o':
+      skipLowerEqual(str);
+      output = fopen(str, "w");
+      break;
+    default:
+      throw runtime_error("parse: Unknown command-line argument");
+    }
+  }
+}
+

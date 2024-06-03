@@ -8,6 +8,9 @@ Build and test (for example) by:
   $ make -j4
   $ ./main < ../test/final1.txt
 
+Or if the transition system and the formulae are in separate files:
+  $ ./main --ts="TS.txt" --formula="benchmark.txt" --output="result.txt"
+
 Please input in LF format.
 
 Action names and atom proposition names should contain only lower letters,
@@ -23,9 +26,9 @@ parse.cpp, parse.hpp : Parse LTL formulae.
 nnf.hpp : AST of LTL formulae in negation normal form.
 nnf.cpp : Translate LTL formulae in negation normal form to equivalent very weak
           alternating automata.
-numbering.hpp, numbering.cpp : Translate between atom proposition names and
-                               action names and their (integer) identifier.
-dynbitset.hpp, dynbitset.cpp : Bitset with dynamic sizes.
+numbering.hpp : Translate between atom proposition names and
+                 action names and their (integer) identifier.
+dynbitset.hpp : Bitset with dynamic sizes.
 vwaa.hpp, vwaa.cpp : Very weak alternating automate.
 gba.hpp : Generalize (nondeterministic) Büchi Automata. The definition differs
           from the textbook by using final transitions instead of final states.

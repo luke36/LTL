@@ -165,9 +165,9 @@ verify_return productIsEmpty(const TS &ts, const BA &ba) {
 
 void verify_return::show(FILE *fp, const Numbering &map) const {
   if (empty) {
-    fprintf(fp, "Satisfied.");
+    fprintf(fp, "\e[0;32mSatisfied.\e[0m");
   } else {
-    fprintf(fp, "Unsatisfied. Counterexample:\n\t");
+    fprintf(fp, "\e[1;31mUnsatisfied.\e[0m Counterexample:\n\t");
     for (auto s : finite_fragment) {
       fprintf(fp, "%lu(", s->id);
       auto &ap = s->ap;
